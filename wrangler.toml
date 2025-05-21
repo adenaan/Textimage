@@ -3,4 +3,6 @@ main = "src/worker.js"
 compatibility_date = "2025-05-21"
 workers_dev = true
 
-ai = { binding = "ai" }
+[[ai]]
+binding = "ai"
+
