@@ -1,0 +1,7 @@
+name = "text-to-image-worker"
+main = "src/worker.js"
+compatibility_date = "2025-05-21"
+workers_dev = true
+
+[vars]
+CLOUDFLARE_API_TOKEN = "d7WfLEhqYcoUZVoINJoszZnCBeCpWkXHmWnQl5cH"
