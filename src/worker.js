@@ -19,10 +19,11 @@ export default {
       const { prompt } = await request.json();
 
       // Run AI model
-      const result = await env.ai.run(
-        "@cf/stabilityai/stable-diffusion-xl-base-1.0", // ✅ correct model name
-        { prompt }
-      );
+     const result = await env.ai.run(
+  "@cf/meta/stabilityai/stable-diffusion-xl-base-1.0",
+  { prompt }
+);
+
 
       return new Response(JSON.stringify({ result }), {
         headers: {
