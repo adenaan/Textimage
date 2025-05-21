@@ -5,4 +5,6 @@ workers_dev = true
 
 [ai]
 binding = "ai"
+[observability.logs]
+enabled = true
 
