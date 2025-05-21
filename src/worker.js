@@ -33,17 +33,15 @@ export default {
 
       console.log("Calling Stability model with prompt:", prompt);
 
-      const result = await env.ai.run(
+      const imageStream = await env.ai.run(
         "@cf/stabilityai/stable-diffusion-xl-base-1.0",
         { prompt }
       );
 
-      console.log("Image generation result:", result);
-
-      return new Response(JSON.stringify({ result }), {
+      return new Response(imageStream, {
         status: 200,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "image/png",
           "Access-Control-Allow-Origin": "*",
         },
       });
