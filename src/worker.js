@@ -1,6 +1,5 @@
 export default {
   async fetch(request, env, ctx) {
-    // Handle CORS preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -19,9 +18,8 @@ export default {
     try {
       const { prompt } = await request.json();
 
-      // ✅ Correct model ID
       const result = await env.ai.run(
-        "@cf/meta/stabilityai/stable-diffusion-xl-base-1.0",
+        "@cf/stabilityai/stable-diffusion-xl-base-1.0", // ✅ the correct model for text-to-image
         { prompt }
       );
 
