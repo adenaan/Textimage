@@ -46,40 +46,50 @@
       const data = await response.json();
       console.log("Full response data:", data);
 
+      // Check the most likely structure: result.image_base64
+      if (data.result && data.result.image_base64) {
+        const image = document.createElement("img");
+        image.src = `data:image/png;base64,${data.result.image_base64}`;
+        output.innerHTML = "";
+        output.appendChild(image);
+        return;
+      }
+
+      // Fallback for possible generations format
       if (
-        !data.result ||
-        !data.result.generations ||
-        !Array.isArray(data.result.generations) ||
-        data.result.generations.length === 0
+        data.result &&
+        data.result.generations &&
+        Array.isArray(data.result.generations) &&
+        data.result.generations.length > 0
       ) {
-        output.innerHTML = "Error generating image.";
-        console.error("Unexpected result:", data);
-        return;
+        const gen = data.result.generations[0];
+        let imageSrc = "";
+
+        if (gen.url) {
+          imageSrc = gen.url;
+        } else if (gen.base64) {
+          imageSrc = `data:image/png;base64,${gen.base64}`;
+        }
+
+        if (imageSrc) {
+          const image = document.createElement("img");
+          image.src = imageSrc;
+          output.innerHTML = "";
+          output.appendChild(image);
+          return;
+        }
       }
 
-      const firstGeneration = data.result.generations[0];
-      let imageSrc;
-
-      if (firstGeneration.url) {
-        imageSrc = firstGeneration.url;
-      } else if (firstGeneration.base64) {
-        imageSrc = `data:image/png;base64,${firstGeneration.base64}`;
-      } else {
-        output.innerHTML = "No image found in the response.";
-        console.error("No image data in generation:", firstGeneration);
-        return;
-      }
-
-      const image = document.createElement("img");
-      image.src = imageSrc;
-      output.innerHTML = "";
-      output.appendChild(image);
+      // If we reach this point, no usable image was found
+      output.innerHTML = "Error: No image data found in response.";
+      console.error("Unexpected or missing image data in result:", data);
     } catch (err) {
       console.error("Fetch error:", err);
-      output.innerHTML = "An error occurred.";
+      output.innerHTML = "An error occurred while generating the image.";
     }
   }
 </script>
+
 
 </body>
 </html>
