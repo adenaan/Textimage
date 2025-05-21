@@ -30,7 +30,7 @@
   <button onclick="generateImage()">Generate Image</button>
   <div id="output"></div>
 
-  <script>
+ <script>
   async function generateImage() {
     const prompt = document.getElementById("prompt").value.trim();
     const output = document.getElementById("output");
@@ -43,46 +43,19 @@
         body: JSON.stringify({ prompt }),
       });
 
-      const data = await response.json();
-      console.log("Full response data:", data);
-
-      // Check the most likely structure: result.image_base64
-      if (data.result && data.result.image_base64) {
-        const image = document.createElement("img");
-        image.src = `data:image/png;base64,${data.result.image_base64}`;
-        output.innerHTML = "";
-        output.appendChild(image);
-        return;
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
       }
 
-      // Fallback for possible generations format
-      if (
-        data.result &&
-        data.result.generations &&
-        Array.isArray(data.result.generations) &&
-        data.result.generations.length > 0
-      ) {
-        const gen = data.result.generations[0];
-        let imageSrc = "";
+      // Convert response stream to a blob
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
 
-        if (gen.url) {
-          imageSrc = gen.url;
-        } else if (gen.base64) {
-          imageSrc = `data:image/png;base64,${gen.base64}`;
-        }
-
-        if (imageSrc) {
-          const image = document.createElement("img");
-          image.src = imageSrc;
-          output.innerHTML = "";
-          output.appendChild(image);
-          return;
-        }
-      }
-
-      // If we reach this point, no usable image was found
-      output.innerHTML = "Error: No image data found in response.";
-      console.error("Unexpected or missing image data in result:", data);
+      const image = document.createElement("img");
+      image.src = imageUrl;
+      image.alt = "Generated image";
+      output.innerHTML = "";
+      output.appendChild(image);
     } catch (err) {
       console.error("Fetch error:", err);
       output.innerHTML = "An error occurred while generating the image.";
