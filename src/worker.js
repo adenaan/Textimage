@@ -1,5 +1,6 @@
 export default {
   async fetch(request, env, ctx) {
+    // Handle CORS preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -18,12 +19,11 @@ export default {
     try {
       const { prompt } = await request.json();
 
-      // Run AI model
-     const result = await env.ai.run(
-  "@cf/meta/stabilityai/stable-diffusion-xl-base-1.0",
-  { prompt }
-);
-
+      // Use the built-in AI binding
+      const result = await env.ai.run(
+        "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+        { prompt }
+      );
 
       return new Response(JSON.stringify({ result }), {
         headers: {
