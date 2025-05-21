@@ -23,6 +23,7 @@ export default {
         { prompt }
       );
 
+      console.log('AI result:', JSON.stringify(result));
       return new Response(JSON.stringify({ result }), {
         headers: {
           "Content-Type": "application/json",
