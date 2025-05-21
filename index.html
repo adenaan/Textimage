@@ -25,15 +25,23 @@
   </style>
 </head>
 <body>
-  <h1>Text to Image Generator</h1>
-  <input type="text" id="prompt" placeholder="Enter your image description..." />
-  <button onclick="generateImage()">Generate Image</button>
-  <div id="output"></div>
+  
+  <div>
+  <input type="text" id="prompt" placeholder="Enter prompt">
+  <button onclick="generateImage()">Generate</button>
+</div>
+
+<div id="output">Generated image will appear here.</div>
+
+<h3>Image History</h3>
+<div id="history" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+
 
  <script>
   async function generateImage() {
     const prompt = document.getElementById("prompt").value.trim();
     const output = document.getElementById("output");
+    const history = document.getElementById("history");
     output.innerHTML = "Generating image...";
 
     try {
@@ -43,25 +51,49 @@
         body: JSON.stringify({ prompt }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
+      if (!response.ok) throw new Error("Worker response error");
 
-      // Convert response stream to a blob
       const blob = await response.blob();
-      const imageUrl = URL.createObjectURL(blob);
+      const imageURL = URL.createObjectURL(blob);
 
+      // Show current image
       const image = document.createElement("img");
-      image.src = imageUrl;
-      image.alt = "Generated image";
+      image.src = imageURL;
+      image.style.maxWidth = "100%";
       output.innerHTML = "";
       output.appendChild(image);
+
+      // Add to history
+      const historyItem = document.createElement("div");
+      historyItem.style.width = "150px";
+      historyItem.style.textAlign = "center";
+
+      const thumb = document.createElement("img");
+      thumb.src = imageURL;
+      thumb.style.width = "100%";
+      thumb.style.border = "1px solid #ccc";
+      thumb.style.borderRadius = "6px";
+
+      const downloadBtn = document.createElement("a");
+      downloadBtn.href = imageURL;
+      downloadBtn.download = `image-${Date.now()}.png`;
+      downloadBtn.innerText = "Download";
+      downloadBtn.style.display = "block";
+      downloadBtn.style.marginTop = "4px";
+      downloadBtn.style.textDecoration = "none";
+      downloadBtn.style.fontSize = "12px";
+
+      historyItem.appendChild(thumb);
+      historyItem.appendChild(downloadBtn);
+      history.appendChild(historyItem);
+
     } catch (err) {
       console.error("Fetch error:", err);
       output.innerHTML = "An error occurred while generating the image.";
     }
   }
 </script>
+
 
 
 </body>
