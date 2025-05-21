@@ -3,7 +3,5 @@ main = "src/worker.js"
 compatibility_date = "2025-05-21"
 workers_dev = true
 
-[[bindings]]
-type = "ai"
-name = "ai"
-model = "@cf/stabilityai/stable-diffusion-xl-base-1.0"
+[[ai]]
+binding = "ai"
