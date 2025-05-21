@@ -17,13 +17,44 @@ export default {
     }
 
     try {
-      const { prompt } = await request.json();
+      const body = await request.json();
+
+      if (!body.prompt || typeof body.prompt !== "string") {
+        return new Response(
+          JSON.stringify({ error: "Invalid or missing prompt" }),
+          {
+            status: 400,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        );
+      }
+
+      const prompt = body.prompt.trim();
 
       // Use the built-in AI binding
       const result = await env.ai.run(
         "@cf/stabilityai/stable-diffusion-xl-base-1.0",
         { prompt }
       );
+
+      // Debug log
+      console.log("AI Result:", JSON.stringify(result));
+
+      if (!result || Object.keys(result).length === 0) {
+        return new Response(
+          JSON.stringify({ error: "AI model returned an empty result." }),
+          {
+            status: 500,
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
+        );
+      }
 
       return new Response(JSON.stringify({ result }), {
         headers: {
@@ -32,13 +63,18 @@ export default {
         },
       });
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      console.error("Error during image generation:", err);
+
+      return new Response(
+        JSON.stringify({ error: err.message || "Unexpected error" }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
     }
   },
 };
