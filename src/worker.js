@@ -18,8 +18,10 @@ export default {
 
     try {
       const body = await request.json();
+      console.log("Incoming JSON body:", JSON.stringify(body));
 
       if (!body.prompt || typeof body.prompt !== "string") {
+        console.log("Invalid prompt received:", body.prompt);
         return new Response(
           JSON.stringify({ error: "Invalid or missing prompt" }),
           {
@@ -33,19 +35,19 @@ export default {
       }
 
       const prompt = body.prompt.trim();
+      console.log("Sending prompt to AI model:", prompt);
 
-      // Use the built-in AI binding
       const result = await env.ai.run(
         "@cf/stabilityai/stable-diffusion-xl-base-1.0",
         { prompt }
       );
 
-      // Debug log
-      console.log("AI Result:", JSON.stringify(result));
+      console.log("Result from AI model:", JSON.stringify(result));
 
       if (!result || Object.keys(result).length === 0) {
+        console.log("AI model returned empty or missing result");
         return new Response(
-          JSON.stringify({ error: "AI model returned an empty result." }),
+          JSON.stringify({ error: "Empty result from AI model" }),
           {
             status: 500,
             headers: {
@@ -63,8 +65,7 @@ export default {
         },
       });
     } catch (err) {
-      console.error("Error during image generation:", err);
-
+      console.error("Error during POST processing:", err.stack || err.message);
       return new Response(
         JSON.stringify({ error: err.message || "Unexpected error" }),
         {
