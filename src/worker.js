@@ -19,19 +19,11 @@ export default {
     try {
       const { prompt } = await request.json();
 
-      const aiResponse = await fetch(
-        "https://api.cloudflare.com/client/v4/accounts/48c282dc6802f0eda22f52bd973920fe/ai/run/@cf/meta/stabilityai/stable-diffusion-xl-base-1.0",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ prompt }),
-        }
+      // Use the built-in AI binding
+      const result = await env.ai.run(
+        "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+        { prompt }
       );
-
-      const result = await aiResponse.json();
 
       return new Response(JSON.stringify({ result }), {
         headers: {
