@@ -1,5 +1,5 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -18,17 +18,11 @@ export default {
     try {
       const { prompt } = await request.json();
 
+      // Run AI model
       const result = await env.ai.run(
-        "@cf/stabilityai/stable-diffusion-xl-base-1.0",
-        {
-          prompt,
-          width: 512,
-          height: 512,
-          steps: 20,
-        }
+        "@cf/stability-ai/stable-diffusion-xl-base-1.0", // ✅ correct model name
+        { prompt }
       );
-
-      console.log('AI result:', JSON.stringify(result));
 
       return new Response(JSON.stringify({ result }), {
         headers: {
