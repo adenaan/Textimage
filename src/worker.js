@@ -19,9 +19,9 @@ export default {
     try {
       const { prompt } = await request.json();
 
-      // Use the built-in AI binding
+      // ✅ Correct model ID
       const result = await env.ai.run(
-        "@cf/stabilityai/stable-diffusion-xl-base-1.0",
+        "@cf/meta/stabilityai/stable-diffusion-xl-base-1.0",
         { prompt }
       );
 
