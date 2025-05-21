@@ -20,7 +20,7 @@ export default {
 
       // Run AI model
       const result = await env.ai.run(
-        "@cf/stability-ai/stable-diffusion-xl-base-1.0", // ✅ correct model name
+        "@cf/stabilityai/stable-diffusion-xl-base-1.0", // ✅ correct model name
         { prompt }
       );
 
